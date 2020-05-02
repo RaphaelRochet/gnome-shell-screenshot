@@ -118,7 +118,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       Config.KeyEnableIndicator
     );
 
-    prefs.add(switchShowIndicator.hbox, {fill: false});
+    prefs.add(switchShowIndicator.hbox);
 
     /* Show notification [on|off] */
 
@@ -127,7 +127,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       Config.KeyEnableNotification
     );
 
-    prefs.add(switchShowNotification.hbox, {fill: false});
+    prefs.add(switchShowNotification.hbox);
 
 
     /* Default click action [dropdown] */
@@ -157,7 +157,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
     hbox.add(labelDefaultClickAction);
     hbox.add(comboBoxDefaultClickAction);
 
-    prefs.add(hbox, {fill: false});
+    prefs.add(hbox);
 
 
     /* Clipboard Action [dropdown] */
@@ -190,7 +190,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
     hbox.add(labelAutoCopy);
     hbox.add(comboBoxClipboardContent);
 
-    prefs.add(hbox, {fill: false});
+    prefs.add(hbox);
 
     return prefs;
   },
@@ -211,7 +211,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       _("Auto-Save Screenshot"), Config.KeySaveScreenshot
     );
 
-    prefs.add(switchSaveScreenshot.hbox, {fill: false});
+    prefs.add(switchSaveScreenshot.hbox);
 
 
     /* Save Location [filechooser] */
@@ -255,7 +255,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
     hbox.add(labelSaveLocation);
     hbox.add(chooserSaveLocation);
 
-    prefs.add(hbox, {fill: false});
+    prefs.add(hbox);
 
 
     /* Filename */
@@ -285,7 +285,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       _settings.get_string(Config.KeyFilenameTemplate);
 
 
-    prefs.add(hbox, {fill: false});
+    prefs.add(hbox);
 
     /* Filename Preview */
 
@@ -353,7 +353,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       _("Enable Imgur Upload"), Config.KeyEnableUploadImgur
     );
 
-    prefs.add(configSwitchEnable.hbox, {fill: false});
+    prefs.add(configSwitchEnable.hbox);
 
 
     /* Enable Upload Notification [on|off] */
@@ -361,7 +361,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       _("Show Upload Notification"), Config.KeyImgurEnableNotification
     );
 
-    prefs.add(configSwitchEnableNotification.hbox, {fill: false});
+    prefs.add(configSwitchEnableNotification.hbox);
 
     bindSensitivity(
       configSwitchEnable.gtkSwitch, configSwitchEnableNotification.gtkLabel
@@ -385,7 +385,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       configSwitchEnable.gtkSwitch, configSwitchUploadOnCapture.gtkSwitch
     );
 
-    prefs.add(configSwitchUploadOnCapture.hbox, {fill: false});
+    prefs.add(configSwitchUploadOnCapture.hbox);
 
     /* Auto-Copy Link After Upload [on|off] */
 
@@ -400,7 +400,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       configSwitchEnable.gtkSwitch, configSwitchCopyLinkOnUpload.gtkSwitch
     );
 
-    prefs.add(configSwitchCopyLinkOnUpload.hbox, {fill: false});
+    prefs.add(configSwitchCopyLinkOnUpload.hbox);
 
     /* Auto-Open Link After Upload [on|off] */
 
@@ -414,7 +414,7 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
       configSwitchEnable.gtkSwitch, configSwitchOpenLinkOnUpload.gtkSwitch
     );
 
-    prefs.add(configSwitchOpenLinkOnUpload.hbox, {fill: false});
+    prefs.add(configSwitchOpenLinkOnUpload.hbox);
 
 
     return prefs;
