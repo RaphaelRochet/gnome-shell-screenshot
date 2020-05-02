@@ -26,7 +26,6 @@ const Local = ExtensionUtils.getCurrentExtension();
 const Filename = Local.imports.filename.exports;
 const Convenience = Local.imports.convenience.exports;
 
-const version = Local.imports.gselib.version.exports.currentVersion();
 
 const getRectangle = (x1, y1, x2, y2) => {
   return {
@@ -135,7 +134,7 @@ class Capture {
   }
 
   _setCursorCompat(v) {
-    if (version.greaterEqual("3.29")) {
+    if (Convenience.currentVersionGreaterEqual("3.29")) {
       global.display.set_cursor(v);
     } else {
       global.screen.set_cursor(v);

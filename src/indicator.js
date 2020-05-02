@@ -18,8 +18,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Local = ExtensionUtils.getCurrentExtension();
 
 const Config = Local.imports.config.exports;
-const version = Local.imports.gselib.version.exports.currentVersion();
-const { openPrefs } = Local.imports.gselib.openPrefs;
+const Version = Local.imports.version.exports;
 const Convenience = Local.imports.convenience.exports;
 
 const { dump } = Local.imports.dump.exports;
@@ -31,15 +30,16 @@ const DefaultIcon = "camera-photo-symbolic";
 const settings = Convenience.getSettings();
 
 
+
 // remove this when dropping support for < 3.33
 const getActorCompat = (obj) =>
-  version.greaterEqual("3.33") ? obj : obj.actor;
+  Convenience.currentVersionGreaterEqual("3.33") ? obj : obj.actor;
 
 const getSliderSignalCompat = (obj) =>
-  version.greaterEqual("3.33") ? "notify::value": "value-changed";
+  Convenience.currentVersionGreaterEqual("3.33") ? "notify::value": "value-changed";
 
 const addActorCompat = (actor, child) =>
-  version.greaterEqual("3.36")
+  Convenience.currentVersionGreater("3.36")
     ? actor.add_child(child)
     : actor.add(child, { expand: true })
 
@@ -326,7 +326,24 @@ class Indicator {
     // Settings can only be triggered via menu
     const settingsItem = new PopupMenu.PopupMenuItem(_("Settings"));
     settingsItem.connect("activate", () => {
-      openPrefs(version, Local.metadata.uuid, { shell: Shell });
+      const appSys = Shell.AppSystem.get_default();
+      const appId = Convenience.currentVersionGreaterEqual("3.36")
+        ? "org.gnome.Extensions.desktop"
+        : "gnome-shell-extension-prefs.desktop";
+      const prefs = appSys.lookup_app(appId);
+
+      if (!prefs) {
+        logError(new Error("could not find prefs app"));
+        return;
+      }
+
+      if (prefs.get_state() == prefs.SHELL_APP_STATE_RUNNING) {
+        prefs.activate();
+      } else {
+        prefs.get_app_info().launch_uris(
+          ["extension:///" + Local.metadata.uuid], null
+        );
+      }
     });
     menu.addMenuItem(settingsItem);
   }

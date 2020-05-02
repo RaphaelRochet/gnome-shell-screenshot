@@ -23,8 +23,6 @@ const Clipboard = Local.imports.clipboard.exports;
 const Thumbnail = Local.imports.thumbnail.exports;
 const Convenience = Local.imports.convenience.exports;
 
-const version = Local.imports.gselib.version.exports.currentVersion();
-
 const NotificationIcon = "camera-photo-symbolic";
 const NotificationSourceName = "Screenshot Tool";
 
@@ -44,7 +42,7 @@ const getSource = () => {
 
 
 const registerClassCompat = (cls) => {
-  if (version.greaterEqual("3.36")) {
+  if (Convenience.currentVersionGreaterEqual("3.36")) {
     return GObject.registerClass(cls);
   } else {
     Signals.addSignalMethods(cls.prototype);
@@ -54,7 +52,7 @@ const registerClassCompat = (cls) => {
 
 
 const showNotificationCompat = (source, notification) => {
-  if (version.greaterEqual("3.36")) {
+  if (Convenience.currentVersionGreaterEqual("3.36")) {
     return source.showNotification(notification);
   } else {
     return source.notify(notification);
