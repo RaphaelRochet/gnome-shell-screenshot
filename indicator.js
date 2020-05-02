@@ -3,6 +3,8 @@
 const Signals = imports.signals;
 
 const St = imports.gi.St;
+const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
 const Cogl = imports.gi.Cogl;
 const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
@@ -18,30 +20,13 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Local = ExtensionUtils.getCurrentExtension();
 
 const Config = Local.imports.config.exports;
-const Version = Local.imports.version.exports;
 const Convenience = Local.imports.convenience.exports;
 
 const { dump } = Local.imports.dump.exports;
 
-
 const DefaultIcon = "camera-photo-symbolic";
 
-
 const settings = Convenience.getSettings();
-
-
-
-// remove this when dropping support for < 3.33
-const getActorCompat = (obj) =>
-  Convenience.currentVersionGreaterEqual("3.33") ? obj : obj.actor;
-
-const getSliderSignalCompat = (obj) =>
-  Convenience.currentVersionGreaterEqual("3.33") ? "notify::value": "value-changed";
-
-const addActorCompat = (actor, child) =>
-  Convenience.currentVersionGreater("3.36")
-    ? actor.add_child(child)
-    : actor.add(child, { expand: true })
 
 class CaptureDelayMenu extends PopupMenu.PopupMenuSection {
   createScale() {
@@ -61,13 +46,10 @@ class CaptureDelayMenu extends PopupMenu.PopupMenuSection {
 
     this.delayValueMS = settings.get_int(Config.KeyCaptureDelay);
     this.slider = new Slider.Slider(this.scaleToSlider(this.delayValueMS));
-    this.slider.connect(getSliderSignalCompat(), this.onDragEnd.bind(this));
+    this.slider.connect("notify::value", this.onDragEnd.bind(this));
     this.sliderItem = new PopupMenu.PopupBaseMenuItem({ activate: false });
 
-    addActorCompat(
-      getActorCompat(this.sliderItem),
-      getActorCompat(this.slider)
-    );
+    this.sliderItem.add_child(this.slider);
     this.addMenuItem(this.sliderItem);
 
     this.delayInfoItem = new PopupMenu.PopupMenuItem(
@@ -115,7 +97,7 @@ class ScreenshotSection {
     this._screenshot = null;
 
     this._image = new PopupMenu.PopupBaseMenuItem();
-    getActorCompat(this._image).content_gravity =
+    this._image.content_gravity =
       Clutter.ContentGravity.RESIZE_ASPECT;
 
     this._clear = new PopupMenu.PopupMenuItem(_("Clear"));
@@ -164,10 +146,10 @@ class ScreenshotSection {
   _updateVisibility() {
     const visible = !!this._screenshot;
 
-    getActorCompat(this._image).visible = visible;
-    getActorCompat(this._clear).visible = visible;
-    getActorCompat(this._copy).visible = visible;
-    getActorCompat(this._save).visible = visible;
+    this._image.visible = visible;
+    this._clear.visible = visible;
+    this._copy.visible = visible;
+    this._save.visible = visible;
 
     const imgurEnabled = settings.get_boolean(Config.KeyEnableUploadImgur);
     const imgurComplete =
@@ -175,15 +157,15 @@ class ScreenshotSection {
         this._screenshot.imgurUpload &&
         this._screenshot.imgurUpload.responseData;
 
-    getActorCompat(this._imgurMenu).visible =
+    this._imgurMenu.visible =
       visible && imgurEnabled;
-    getActorCompat(this._imgurUpload).visible =
+    this._imgurUpload.visible =
       visible && imgurEnabled && !imgurComplete;
-    getActorCompat(this._imgurOpen).visible =
+    this._imgurOpen.visible =
       visible && imgurEnabled && imgurComplete;
-    getActorCompat(this._imgurCopyLink).visible =
+    this._imgurCopyLink.visible =
       visible && imgurEnabled && imgurComplete;
-    getActorCompat(this._imgurDelete).visible =
+    this._imgurDelete.visible =
       visible && imgurEnabled && imgurComplete;
   }
 
@@ -206,8 +188,8 @@ class ScreenshotSection {
       throw Error("error creating Clutter.Image()");
     }
 
-    getActorCompat(this._image).content = image;
-    getActorCompat(this._image).height = 200;
+    this._image.content = image;
+    this._image.height = 200;
   }
 
   setScreenshot(screenshot) {
@@ -268,8 +250,8 @@ class Indicator {
       icon_name: DefaultIcon,
       style_class: "system-status-icon"
     });
-    getActorCompat(this.panelButton).add_actor(icon);
-    getActorCompat(this.panelButton)
+    this.panelButton.add_actor(icon);
+    this.panelButton
       .connect("button-press-event", this._onClick.bind(this));
 
     this._buildMenu();
@@ -326,26 +308,18 @@ class Indicator {
     // Settings can only be triggered via menu
     const settingsItem = new PopupMenu.PopupMenuItem(_("Settings"));
     settingsItem.connect("activate", () => {
-      const appSys = Shell.AppSystem.get_default();
-      const appId = Convenience.currentVersionGreaterEqual("3.36")
-        ? "org.gnome.Extensions.desktop"
-        : "gnome-shell-extension-prefs.desktop";
-      const prefs = appSys.lookup_app(appId);
-
-      if (!prefs) {
-        logError(new Error("could not find prefs app"));
-        return;
-      }
-
-      if (prefs.get_state() == prefs.SHELL_APP_STATE_RUNNING) {
-        prefs.activate();
-      } else {
-        prefs.get_app_info().launch_uris(
-          ["extension:///" + Local.metadata.uuid], null
-        );
-      }
+		Gio.DBus.session.call(
+		'org.gnome.Shell.Extensions',
+		'/org/gnome/Shell/Extensions',
+		'org.gnome.Shell.Extensions',
+		'OpenExtensionPrefs',
+		new GLib.Variant('(ssa{sv})', [Local.uuid, '', {}]),
+		null,
+		Gio.DBusCallFlags.NONE,
+		-1,
+		null);
     });
-    menu.addMenuItem(settingsItem);
+	menu.addMenuItem(settingsItem);
   }
 
   setScreenshot(screenshot) {

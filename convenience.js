@@ -31,7 +31,6 @@ const Gio = imports.gi.Gio;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Local = ExtensionUtils.getCurrentExtension();
-const Version = Local.imports.version.exports;
 
 /**
  * initTranslations:
@@ -93,40 +92,7 @@ function getSettings(schema) {
     return new Gio.Settings({ settings_schema: schemaObj });
 }
 
-
-function currentVersion() {
-    return Config.PACKAGE_VERSION;
-}
-
-function currentVersionEqual(v) {
-    return Version.versionEqual(currentVersion(), v);
-}
-
-function currentVersionGreater(v) {
-    return Version.versionGreater(currentVersion(), v);
-}
-
-function currentVersionGreaterEqual(v) {
-    return Version.versionEqual(currentVersion(), v)
-        || Version.versionGreater(currentVersion(), v);
-}
-
-function currentVersionSmaller(v) {
-    return Version.versionSmaller(currentVersion(), v);
-}
-
-function currentVersionSmallerEqual(v) {
-    return Version.versionEqual(currentVersion(), v)
-        && (!Version.versionGreater(currentVersion(), v));
-}
-
 var exports = {
   initTranslations,
-  getSettings,
-  currentVersion,
-  currentVersionEqual,
-  currentVersionGreater,
-  currentVersionGreaterEqual,
-  currentVersionSmaller,
-  currentVersionSmallerEqual
+  getSettings
 };

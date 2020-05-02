@@ -42,21 +42,12 @@ const getSource = () => {
 
 
 const registerClassCompat = (cls) => {
-  if (Convenience.currentVersionGreaterEqual("3.36")) {
     return GObject.registerClass(cls);
-  } else {
-    Signals.addSignalMethods(cls.prototype);
-    return cls;
-  }
 }
 
 
 const showNotificationCompat = (source, notification) => {
-  if (Convenience.currentVersionGreaterEqual("3.36")) {
     return source.showNotification(notification);
-  } else {
-    return source.notify(notification);
-  }
 }
 
 

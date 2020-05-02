@@ -133,20 +133,12 @@ class Capture {
     }
   }
 
-  _setCursorCompat(v) {
-    if (Convenience.currentVersionGreaterEqual("3.29")) {
-      global.display.set_cursor(v);
-    } else {
-      global.screen.set_cursor(v);
-    }
-  }
-
   _setDefaultCursor() {
-    this._setCursorCompat(Meta.Cursor.DEFAULT);
+    global.display.set_cursor(Meta.Cursor.DEFAULT);
   }
 
   _setCaptureCursor() {
-    this._setCursorCompat(Meta.Cursor.CROSSHAIR);
+    global.display.set_cursor(Meta.Cursor.CROSSHAIR);
   }
 
   _onCaptureEvent(actor, event) {
