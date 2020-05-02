@@ -437,7 +437,6 @@ const ScreenshotToolSettingsWidget = new GObject.Class({
     ];
 
     for (const [name, description] of bindings) {
-      log("binding: " + name + " description: " + description);
       const binding = _settings.get_strv(name)[0];
 
       let key, mods;
